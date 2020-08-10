@@ -22,11 +22,12 @@ class Saver:
 		file = "output/%s_%s.mp4" %(userId, now)
 		if ":" in file:
 			file = file.replace(":", "_")
-		subprocess.run([
+		cmd = [
 			"ffmpeg",
 			"-i",
 			url,
 			"-c",
 			"copy",
 			file
-		])
+		]
+		subprocess.run(cmd)

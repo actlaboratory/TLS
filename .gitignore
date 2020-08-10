@@ -1,4 +1,5 @@
-output\*
+output/*
 twitcasting/*.txt
 test.py
 *__pycache__*
+.vscode/*
