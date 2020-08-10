@@ -8,8 +8,9 @@ import datetime
 
 class Saver:
 	def getHlsUrl(self, userId):
+		self.movieInfo = twitcasting.twitcasting.GetCurrentLive(userId)
 		try:
-			return twitcasting.twitcasting.GetCurrentLive(userId)["movie"]["hls_url"]
+			return self.movieInfo["movie"]["hls_url"]
 		except KeyError:
 			return False
 
@@ -17,9 +18,9 @@ class Saver:
 		url = self.getHlsUrl(userId)
 		if url == False:
 			return
-		now = datetime.datetime.now()
-		now = now.strftime("%Y%m%d_%H%M%S")
-		file = "output/%s_%s.mp4" %(userId, now)
+		startTime = datetime.datetime.fromtimestamp(self.movieInfo["movie"]["created"])
+		startTime = startTime.strftime("%Y%m%d_%H%M%S")
+		file = "output/%s_%s.mp4" %(userId, startTime)
 		if ":" in file:
 			file = file.replace(":", "_")
 		cmd = [
