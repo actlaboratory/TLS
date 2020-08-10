@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 # 録画処理モジュール
 
-import os
+import pathlib
 import subprocess
 import twitcasting.twitcasting
 import datetime
@@ -34,18 +34,22 @@ class Saver:
 			userId = userId[0:userId.find("/")]
 		if url == False:
 			return
+		if ":" in userId:
+			userId = userId.replace(":", "_")
 		startTime = datetime.datetime.fromtimestamp(self.movieInfo["movie"]["created"])
-		startTime = startTime.strftime("%Y%m%d_%H%M%S")
 		extension = "mp4"
-		file = "output/%s_%s.%s" %(userId, startTime, extension)
-		if ":" in file:
-			file = file.replace(":", "_")
+		outDir = pathlib.Path("output")
+		createUserDir = True
+		if createUserDir == True:
+			outDir = outDir.joinpath(userId)
+		outDir.mkdir(parents=True, exist_ok=True)
+		fileName = "%s(%s)" %(userId, startTime.strftime("%Y年%m月%d日%H時%M分%S秒"))
 		cmd = [
 			"ffmpeg",
 			"-i",
 			url,
 			"-f",
 			extension,
-			file
+			"%s/%s.%s" %(outDir, fileName, extension)
 		]
 		subprocess.run(cmd)
