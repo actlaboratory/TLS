@@ -24,15 +24,16 @@ class Saver:
 			return
 		startTime = datetime.datetime.fromtimestamp(self.movieInfo["movie"]["created"])
 		startTime = startTime.strftime("%Y%m%d_%H%M%S")
-		file = "output/%s_%s.mp4" %(userId, startTime)
+		extension = "mp4"
+		file = "output/%s_%s.%s" %(userId, startTime, extension)
 		if ":" in file:
 			file = file.replace(":", "_")
 		cmd = [
 			"ffmpeg",
 			"-i",
 			url,
-			"-c",
-			"copy",
+			"-f",
+			extension,
 			file
 		]
 		subprocess.run(cmd)
