@@ -15,6 +15,10 @@ class Saver:
 			return False
 
 	def start(self, userId):
+		if "https://twitcasting.tv/" in userId:
+			userId = userId[23:]
+		elif "http://twitcasting.tv/" in userId:
+			userId = userId[22:]
 		url = self.getHlsUrl(userId)
 		if url == False:
 			return
