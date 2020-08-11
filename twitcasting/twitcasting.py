@@ -35,7 +35,10 @@ def GetMovieInfo(movie_id):
 def GetMoviesByUser(user_id, offset=0, limit=20, slice_id=""):
 	result = requests.get(baseURL + "/users/" + user_id + "/movies?offset=" + str(offset) + "&limit=" + str(limit) + "&slice_id=" + str(slice_id), headers=baseHeaders)
 	dict = result.json()
-	return dict["movies"]
+	try:
+		return dict["movies"]
+	except:
+		return []
 
 # Comments
 def GetComments(movie_id, offset=0, limit=10, slice_id=""):

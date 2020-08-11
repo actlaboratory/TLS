@@ -4,10 +4,14 @@
 import saver
 import locale
 import twitcasting.twitcasting
+import sys
 
 locale.setlocale(locale.LC_ALL, "ja-jp")
 
-user = input("アカウント名を入力")
+if len(sys.argv) == 2:
+	user = sys.argv[1]
+else:
+	user = input("Type user name.")
 movies = []
 
 result = twitcasting.twitcasting.GetMoviesByUser(user)
@@ -20,3 +24,4 @@ saverObject = saver.Saver()
 for i in movies:
 	if i["is_recorded"] == True:
 		saverObject.start(i["link"])
+print("Done!")
