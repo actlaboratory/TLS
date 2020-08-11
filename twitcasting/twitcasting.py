@@ -27,10 +27,15 @@ def GetMovieInfo(movie_id):
 	dict = result.json()
 	return dict
 
-def GetCurrentLive(user_id):
-	result = requests.get(baseURL + "/users/" + user_id + "/current_live", headers=baseHeaders)
+def GetMovieInfo(movie_id):
+	result = requests.get(baseURL + "/movies/" + movie_id, headers=baseHeaders)
 	dict = result.json()
 	return dict
+
+def GetMoviesByUser(user_id, offset=0, limit=20, slice_id=""):
+	result = requests.get(baseURL + "/users/" + user_id + "/movies?offset=" + str(offset) + "&limit=" + str(limit) + "&slice_id=" + str(slice_id), headers=baseHeaders)
+	dict = result.json()
+	return dict["movies"]
 
 # Comments
 def GetComments(movie_id, offset=0, limit=10, slice_id=""):

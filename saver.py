@@ -37,7 +37,7 @@ class Saver:
 		if ":" in userId:
 			userId = userId.replace(":", "_")
 		startTime = datetime.datetime.fromtimestamp(self.movieInfo["movie"]["created"])
-		extension = "mp4"
+		fileType = "mp3"
 		outDir = pathlib.Path("output")
 		createUserDir = True
 		if createUserDir == True:
@@ -49,7 +49,7 @@ class Saver:
 			"-i",
 			url,
 			"-f",
-			extension,
-			"%s/%s.%s" %(outDir, fileName, extension)
+			fileType,
+			"%s/%s.%s" %(outDir, fileName, fileType)
 		]
 		subprocess.run(cmd)
