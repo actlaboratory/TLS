@@ -22,6 +22,6 @@ while len(result) > 0:
 
 saverObject = saver.Saver()
 for i in movies:
-	if i["is_recorded"] == True:
+	if i["is_recorded"] == True and i["is_protected"] == False:
 		saverObject.start(i["link"])
 print("Done!")
