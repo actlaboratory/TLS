@@ -35,7 +35,7 @@ class Saver:
 		if url == False:
 			return
 		if ":" in userId:
-			userId = userId.replace(":", "_")
+			userId = userId.replace(":", "")
 		startTime = datetime.datetime.fromtimestamp(self.movieInfo["movie"]["created"])
 		fileType = "mp3"
 		outDir = pathlib.Path("output")
