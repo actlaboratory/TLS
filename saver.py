@@ -12,7 +12,12 @@ class Saver:
 	def getHlsUrl(self, userId):
 		if "/movie/" in userId:
 			self.movieInfo = twitcasting.twitcasting.GetMovieInfo(userId[userId.rfind("/") + 1:])
-			response = requests.get("http://twitcasting.tv/%s" %(userId)).text
+			session = requests.session()
+			response = session.get(self.movieInfo["movie"]["link"])
+			if self.movieInfo["movie"]["is_protected"] == True:
+				password = input("Type password.")
+				response = session.post(self.movieInfo["movie"]["link"], data="password=%s" %password, headers={"Content-Type": "application/x-www-form-urlencoded"})
+				response = response.text
 			start = re.search("https:\\\/\\\/dl\d\d\.twitcasting\.tv\\\/tc\.vod\\\/", response).start()
 			end = response.find("\"", start)
 			url = response[start:end]
