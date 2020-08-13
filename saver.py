@@ -38,15 +38,30 @@ class Saver:
 			userId = userId.replace(":", "-")
 		startTime = datetime.datetime.fromtimestamp(self.movieInfo["movie"]["created"])
 		fileType = "mp3"
+		nameReplaceList = {
+			"%user_id%": self.movieInfo["broadcaster"]["id"],
+			"%user_screen_id%": self.movieInfo["broadcaster"]["screen_id"],
+			"%user_name%": self.movieInfo["broadcaster"]["name"],
+			"%year%": startTime.strftime("%Y"),
+			"%month%": startTime.strftime("%m"),
+			"%day%": startTime.strftime("%d"),
+			"%hour%": startTime.strftime("%H"),
+			"%minute%": startTime.strftime("%M"),
+			"%second%": startTime.strftime("%S"),
+			"%movie_title%": self.movieInfo["movie"]["title"],
+			"%movie_id%": self.movieInfo["movie"]["id"]
+		}
 		outDir = pathlib.Path("output")
-		createUserDir = True
-		if createUserDir == True:
-			subDirName = "%screen_id%(%id%)"
-			subDirName = subDirName.replace("%screen_id%", self.movieInfo["broadcaster"]["screen_id"])
-			subDirName = subDirName.replace("%id%", self.movieInfo["broadcaster"]["id"])
+		createSubDir = True
+		if createSubDir == True:
+			subDirName = "%user_screen_id%"
+			for i, j in nameReplaceList.items():
+				subDirName = subDirName.replace(i, j)
 			outDir = outDir.joinpath(subDirName)
 		outDir.mkdir(parents=True, exist_ok=True)
-		fileName = "%s(%s)" %(userId, startTime.strftime("%Y年%m月%d日%H時%M分%S秒"))
+		fileName = "%user_screen_id%(%year%年%month%月%day%日%hour%時%minute%分%second%秒)"
+		for i, j in nameReplaceList.items():
+			fileName = fileName.replace(i, j)
 		cmd = [
 			"ffmpeg",
 			"-i",
