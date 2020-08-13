@@ -41,7 +41,10 @@ class Saver:
 		outDir = pathlib.Path("output")
 		createUserDir = True
 		if createUserDir == True:
-			outDir = outDir.joinpath(userId)
+			subDirName = "%screen_id%(%id%)"
+			subDirName = subDirName.replace("%screen_id%", self.movieInfo["broadcaster"]["screen_id"])
+			subDirName = subDirName.replace("%id%", self.movieInfo["broadcaster"]["id"])
+			outDir = outDir.joinpath(subDirName)
 		outDir.mkdir(parents=True, exist_ok=True)
 		fileName = "%s(%s)" %(userId, startTime.strftime("%Y年%m月%d日%H時%M分%S秒"))
 		cmd = [
