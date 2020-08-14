@@ -19,7 +19,6 @@ import menuItemsStore
 from logging import getLogger
 import simpleDialog
 from .base import *
-from simpleDialog import *
 
 from views import mkDialog
 
@@ -41,8 +40,9 @@ class MainView(BaseView):
 			self.app.config.getint(self.identifier,"positionY",50,0)
 		)
 		self.InstallMenuEvent(Menu(self.identifier),self.events.OnMenuSelect)
-		self.urlEdit, self.urlStatic = self.creator.inputbox(_("ライブURL"))
+		self.urlEdit, self.urlStatic = self.creator.inputbox(_("ユーザ名または録画URLを入力"))
 		self.startButton = self.creator.button(_("録画開始"), self.events.start)
+		self.statusEdit, self.statusStatic = self.creator.inputbox(_("状況"), 0, "", wx.TE_READONLY|wx.TE_MULTILINE|wx.TE_DONTWRAP)
 
 class Menu(BaseMenu):
 	def Apply(self,target):

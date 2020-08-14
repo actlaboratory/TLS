@@ -7,8 +7,15 @@ import twitcasting.twitcasting
 import datetime
 import requests
 import re
+import globalVars
+import wx
 
 class Saver:
+	def __init__(self):
+		self.evtHandler = wx.EvtHandler()
+		self.evtHandler.Bind(wx.EVT_TIMER, self.getStatus)
+		self.timer = wx.Timer(self.evtHandler)
+
 	def getHlsUrl(self, userId):
 		if "/movie/" in userId:
 			self.movieInfo = twitcasting.twitcasting.GetMovieInfo(userId[userId.rfind("/") + 1:])
@@ -17,7 +24,7 @@ class Saver:
 			if self.movieInfo["movie"]["is_protected"] == True:
 				password = input("Type password.")
 				response = session.post(self.movieInfo["movie"]["link"], data="password=%s" %password, headers={"Content-Type": "application/x-www-form-urlencoded"})
-				response = response.text
+			response = response.text
 			start = re.search("https:\\\/\\\/dl\d\d\.twitcasting\.tv\\\/tc\.vod\\\/", response).start()
 			end = response.find("\"", start)
 			url = response[start:end]
@@ -75,4 +82,14 @@ class Saver:
 			fileType,
 			"%s/%s.%s" %(outDir, fileName, fileType)
 		]
-		subprocess.run(cmd)
+		self.result = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, encoding="utf-8")
+		globalVars.app.hMainView.urlEdit.Clear()
+		globalVars.app.hMainView.statusEdit.Clear()
+		self.timer.Start(1000)
+		if self.result.poll() != None:
+			self.timer.Stop()
+
+	def getStatus(self, event):
+		cursorPoint = globalVars.app.hMainView.statusEdit.GetInsertionPoint()
+		globalVars.app.hMainView.statusEdit.SetValue(globalVars.app.hMainView.statusEdit.GetValue() + self.result.stdout.readline())
+		globalVars.app.hMainView.statusEdit.SetInsertionPoint(cursorPoint)
