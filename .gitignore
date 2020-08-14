@@ -3,3 +3,16 @@ twitcasting/*.txt
 test.py
 *__pycache__*
 .vscode/*
+*.pyc
+*.log
+settings.ini
+keymap.ini
+*.bat
+*log.txt
+build/
+dist/
+*.obj
+*.exp
+*.lib
+*.spec
+pl_auto_save
