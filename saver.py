@@ -38,7 +38,7 @@ class Saver:
 		if "/" in userId:
 			userId = userId[0:userId.find("/")]
 		if url == False:
-			return
+			return False
 		if ":" in userId:
 			userId = userId.replace(":", "-")
 		startTime = datetime.datetime.fromtimestamp(self.movieInfo["movie"]["created"])

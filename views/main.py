@@ -17,7 +17,7 @@ import globalVars
 import menuItemsStore
 
 from logging import getLogger
-from simpleDialog import dialog
+import simpleDialog
 from .base import *
 from simpleDialog import *
 
@@ -41,7 +41,8 @@ class MainView(BaseView):
 			self.app.config.getint(self.identifier,"positionY",50,0)
 		)
 		self.InstallMenuEvent(Menu(self.identifier),self.events.OnMenuSelect)
-
+		self.urlEdit, self.urlStatic = self.creator.inputbox(_("ライブURL"))
+		self.startButton = self.creator.button(_("録画開始"), self.events.start)
 
 class Menu(BaseMenu):
 	def Apply(self,target):
@@ -74,3 +75,8 @@ class Events(BaseEvents):
 			r = d.Show()
 			if r == 0:
 				print("Hello World!")
+
+	def start(self, event):
+		result = globalVars.app.saver.start(self.parent.urlEdit.GetValue())
+		if result == False:
+			simpleDialog.errorDialog(_("録画に失敗しました。URLが間違っているか、現在放送中ではありません。"))
