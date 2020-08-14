@@ -9,6 +9,7 @@ import requests
 import re
 import globalVars
 import wx
+import simpleDialog
 
 class Saver:
 	def __init__(self):
@@ -74,13 +75,19 @@ class Saver:
 		fileName = "%user_screen_id%(%year%年%month%月%day%日%hour%時%minute%分%second%秒)"
 		for i, j in nameReplaceList.items():
 			fileName = fileName.replace(i, j)
+		target = pathlib.Path("%s/%s.%s" %(outDir, fileName, fileType))
+		if target.exists() == True:
+			question = simpleDialog.yesNoDialog(_("確認"), _("%sはすでに存在します。上書きしてもよろしいですか？") %target.as_posix())
+			if question == wx.ID_NO:
+				return
 		cmd = [
 			"ffmpeg",
+			"-y",
 			"-i",
 			url,
 			"-f",
 			fileType,
-			"%s/%s.%s" %(outDir, fileName, fileType)
+			target.as_posix()
 		]
 		self.result = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, encoding="utf-8")
 		globalVars.app.hMainView.urlEdit.Clear()
