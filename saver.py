@@ -10,12 +10,15 @@ import re
 import globalVars
 import wx
 import simpleDialog
+import winsound
+
+getStatus = 0
+getCurrentLive = 1
 
 class Saver:
 	def __init__(self):
 		self.evtHandler = wx.EvtHandler()
-		self.evtHandler.Bind(wx.EVT_TIMER, self.getStatus)
-		self.timer = wx.Timer(self.evtHandler)
+		self.evtHandler.Bind(wx.EVT_TIMER, self.timer)
 
 	def getHlsUrl(self, userId):
 		if "/movie/" in userId:
@@ -92,11 +95,24 @@ class Saver:
 		self.result = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, encoding="utf-8")
 		globalVars.app.hMainView.urlEdit.Clear()
 		globalVars.app.hMainView.statusEdit.Clear()
-		self.timer.Start(1000)
-		if self.result.poll() != None:
-			self.timer.Stop()
+		self.getStatusTimer = wx.Timer(self.evtHandler, getStatus)
+		timer = self.getStatusTimer.Start(1000)
 
-	def getStatus(self, event):
+	def getStatus(self):
 		cursorPoint = globalVars.app.hMainView.statusEdit.GetInsertionPoint()
 		globalVars.app.hMainView.statusEdit.SetValue(globalVars.app.hMainView.statusEdit.GetValue() + self.result.stdout.readline())
 		globalVars.app.hMainView.statusEdit.SetInsertionPoint(cursorPoint)
+
+	def timer(self, event):
+		timer = event.GetTimer()
+		id = timer.GetId()
+		if id == getStatus:
+			self.getStatus()
+			if self.result.poll() != None:
+				timer.Stop()
+				self.end()
+
+	def end(self):
+		autoClose = True
+		if autoClose == True:
+			globalVars.app.hMainView.events.Exit()
