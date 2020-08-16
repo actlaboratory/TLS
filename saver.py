@@ -14,6 +14,8 @@ import winsound
 
 getStatus = 0
 getCurrentLive = 1
+archive = 2
+realtime = 3
 
 class Saver:
 	def __init__(self):
@@ -22,6 +24,7 @@ class Saver:
 
 	def getHlsUrl(self, userId):
 		if "/movie/" in userId:
+			self.mode = archive
 			self.movieInfo = twitcasting.twitcasting.GetMovieInfo(userId[userId.rfind("/") + 1:])
 			session = requests.session()
 			response = session.get(self.movieInfo["movie"]["link"])
@@ -34,6 +37,7 @@ class Saver:
 			url = response[start:end]
 			url = url.replace("\\/", "/")
 			return url
+		self.mode = realtime
 		self.movieInfo = twitcasting.twitcasting.GetCurrentLive(userId)
 		try:
 			return self.movieInfo["movie"]["hls_url"]
@@ -96,7 +100,7 @@ class Saver:
 		globalVars.app.hMainView.urlEdit.Clear()
 		globalVars.app.hMainView.statusEdit.Clear()
 		self.getStatusTimer = wx.Timer(self.evtHandler, getStatus)
-		timer = self.getStatusTimer.Start(1000)
+		self.getStatusTimer.Start(1000)
 
 	def getStatus(self):
 		cursorPoint = globalVars.app.hMainView.statusEdit.GetInsertionPoint()
@@ -110,9 +114,28 @@ class Saver:
 			self.getStatus()
 			if self.result.poll() != None:
 				timer.Stop()
+				checkNextLive = True
+				if self.mode == realtime and checkNextLive == True:
+					self.checkNextLive()
+					return
+				self.end()
+		elif id == getCurrentLive:
+			self.count += 1
+			currentLive = self.getHlsUrl(self.userId)
+			if currentLive != False:
+				timer.Stop()
+				self.start(self.userId)
+			elif currentLive == False and self.count == 100:
+				timer.Stop()
 				self.end()
 
 	def end(self):
 		autoClose = True
 		if autoClose == True:
 			globalVars.app.hMainView.events.Exit()
+
+	def checkNextLive(self):
+		self.userId = self.movieInfo["broadcaster"]["id"]
+		self.getCurrentLiveTimer = wx.Timer(self.evtHandler, getCurrentLive)
+		self.count = 0
+		self.getCurrentLiveTimer.Start(5000)
