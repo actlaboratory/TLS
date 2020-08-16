@@ -40,9 +40,13 @@ class Saver:
 		self.mode = realtime
 		self.movieInfo = twitcasting.twitcasting.GetCurrentLive(userId)
 		try:
+			self.userId = self.movieInfo["broadcaster"]["id"]
 			return self.movieInfo["movie"]["hls_url"]
 		except KeyError:
-			return False
+			try:
+				self.userId = twitcasting.twitcasting.GetUserInfo(userId)["user"]["id"]
+			except:
+				return False
 
 	def start(self, userId):
 		if "https://twitcasting.tv/" in userId:
@@ -50,10 +54,13 @@ class Saver:
 		elif "http://twitcasting.tv/" in userId:
 			userId = userId[22:]
 		url = self.getHlsUrl(userId)
-		if "/" in userId:
-			userId = userId[0:userId.find("/")]
+		if url == None:
+			self.checkNextLive()
+			return
 		if url == False:
 			return False
+		if "/" in userId:
+			userId = userId[0:userId.find("/")]
 		if ":" in userId:
 			userId = userId.replace(":", "-")
 		startTime = datetime.datetime.fromtimestamp(self.movieInfo["movie"]["created"])
@@ -122,10 +129,10 @@ class Saver:
 		elif id == getCurrentLive:
 			self.count += 1
 			currentLive = self.getHlsUrl(self.userId)
-			if currentLive != False:
+			if currentLive != False and currentLive != None:
 				timer.Stop()
 				self.start(self.userId)
-			elif currentLive == False and self.count == 100:
+			elif self.count == 100:
 				timer.Stop()
 				self.end()
 
@@ -135,7 +142,6 @@ class Saver:
 			globalVars.app.hMainView.events.Exit()
 
 	def checkNextLive(self):
-		self.userId = self.movieInfo["broadcaster"]["id"]
-		self.getCurrentLiveTimer = wx.Timer(self.evtHandler, getCurrentLive)
 		self.count = 0
+		self.getCurrentLiveTimer = wx.Timer(self.evtHandler, getCurrentLive)
 		self.getCurrentLiveTimer.Start(5000)
