@@ -86,7 +86,7 @@ class Saver:
 				subDirName = subDirName.replace(i, j)
 			outDir = outDir.joinpath(subDirName)
 		outDir.mkdir(parents=True, exist_ok=True)
-		fileName = "%user_screen_id%(%year%年%month%月%day%日%hour%時%minute%分%second%秒)"
+		fileName = "%user_screen_id%（%year%年%month%月%day%日%hour%時%minute%分%second%秒）"
 		for i, j in nameReplaceList.items():
 			fileName = fileName.replace(i, j)
 		target = pathlib.Path("%s/%s.%s" %(outDir, fileName, fileType))
@@ -132,7 +132,7 @@ class Saver:
 			if currentLive != False and currentLive != None:
 				timer.Stop()
 				self.start(self.userId)
-			elif self.count == 100:
+			elif self.count == 20:
 				timer.Stop()
 				self.end()
 
@@ -144,4 +144,4 @@ class Saver:
 	def checkNextLive(self):
 		self.count = 0
 		self.getCurrentLiveTimer = wx.Timer(self.evtHandler, getCurrentLive)
-		self.getCurrentLiveTimer.Start(5000)
+		self.getCurrentLiveTimer.Start(30000)
