@@ -77,6 +77,4 @@ class Events(BaseEvents):
 				print("Hello World!")
 
 	def start(self, event):
-		result = globalVars.app.saver.start(self.parent.urlEdit.GetValue())
-		if result == False:
-			simpleDialog.errorDialog(_("録画に失敗しました。URLが間違っているか、現在放送中ではありません。"))
+		globalVars.app.saver.start(self.parent.urlEdit.GetValue())

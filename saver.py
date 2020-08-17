@@ -27,7 +27,10 @@ class Saver:
 			self.mode = archive
 			self.movieInfo = twitcasting.twitcasting.GetMovieInfo(userId[userId.rfind("/") + 1:])
 			session = requests.session()
-			response = session.get(self.movieInfo["movie"]["link"])
+			try:
+				response = session.get(self.movieInfo["movie"]["link"])
+			except:
+				return False
 			if self.movieInfo["movie"]["is_protected"] == True:
 				password = input("Type password.")
 				response = session.post(self.movieInfo["movie"]["link"], data="password=%s" %password, headers={"Content-Type": "application/x-www-form-urlencoded"})
@@ -46,7 +49,7 @@ class Saver:
 			try:
 				self.userId = twitcasting.twitcasting.GetUserInfo(userId)["user"]["id"]
 			except:
-				return False
+				return ret
 
 	def start(self, userId):
 		if "https://twitcasting.tv/" in userId:
@@ -55,10 +58,15 @@ class Saver:
 			userId = userId[22:]
 		url = self.getHlsUrl(userId)
 		if url == None:
-			self.checkNextLive()
+			waitLiveStart = globalVars.app.config.getboolean("recording", "waitLiveStart", True)
+			if waitLiveStart == True:
+				self.checkNextLive()
+			else:
+				simpleDialog.errorDialog(_("このユーザは現在配信中ではありません。"))
 			return
 		if url == False:
-			return False
+			simpleDialog.errorDialog(_("録画に失敗しました。録画ライブの指定が間違っているか、現在放送中ではありません。"))
+			return
 		if "/" in userId:
 			userId = userId[0:userId.find("/")]
 		if ":" in userId:
