@@ -23,4 +23,11 @@ class DefaultSettings:
 			"sizeX": "800",
 			"sizeY": "600",
 		}
+		config["recording"]={
+			"outDir": "output",
+			"fileType": "mp4",
+			"fileName": "$user_screen_id（$year年$month月$day日$hour時$minute分$second秒）",
+			"createSubDir": True,
+			"subDirName": "$user_screen_id"
+		}
 		return config
