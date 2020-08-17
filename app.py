@@ -75,6 +75,8 @@ class Main(wx.App):
 		self.hMainView=main.MainView()
 		self.saver = saver.Saver()
 		self.hMainView.Show()
+		if len(sys.argv) == 2:
+			self.saver.start(sys.argv[1])
 		return True
 
 	def InitLogger(self):
