@@ -30,6 +30,7 @@ class DefaultSettings:
 			"createSubDir": True,
 			"subDirName": "$user_screen_id",
 			"waitLiveStart": True,
-			"checkNextLive": True
+			"checkNextLive": True,
+			"autoClose": True
 		}
 		return config

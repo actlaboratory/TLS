@@ -145,7 +145,7 @@ class Saver:
 				self.end()
 
 	def end(self):
-		autoClose = True
+		autoClose = globalVars.app.config.getboolean("recording", "autoClose", True)
 		if autoClose == True:
 			globalVars.app.hMainView.events.Exit()
 
