@@ -129,7 +129,7 @@ class Saver:
 			self.getStatus()
 			if self.result.poll() != None:
 				timer.Stop()
-				checkNextLive = True
+				checkNextLive = globalVars.app.config.getboolean("recording", "checkNextLive", True)
 				if self.mode == realtime and checkNextLive == True:
 					self.checkNextLive()
 					return

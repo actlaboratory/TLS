@@ -29,6 +29,7 @@ class DefaultSettings:
 			"fileName": "$user_screen_id（$year年$month月$day日$hour時$minute分$second秒）",
 			"createSubDir": True,
 			"subDirName": "$user_screen_id",
-			"waitLiveStart": True
+			"waitLiveStart": True,
+			"checkNextLive": True
 		}
 		return config
