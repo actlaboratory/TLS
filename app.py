@@ -76,6 +76,7 @@ class Main(wx.App):
 		self.saver = saver.Saver()
 		self.hMainView.Show()
 		if len(sys.argv) == 2:
+			self.hMainView.urlEdit.SetValue(sys.argv[1])
 			self.saver.start(sys.argv[1])
 		return True
 

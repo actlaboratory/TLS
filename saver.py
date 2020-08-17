@@ -107,6 +107,9 @@ class Saver:
 		if target.exists() == True:
 			question = simpleDialog.yesNoDialog(_("確認"), _("%sはすでに存在します。上書きしてもよろしいですか？") %target.as_posix())
 			if question == wx.ID_NO:
+				globalVars.app.hMainView.urlEdit.Enable()
+				globalVars.app.hMainView.startButton.Enable()
+				globalVars.app.hMainView.statusEdit.Disable()
 				return
 		getComment = globalVars.app.config.getboolean("recording", "getComment", False)
 		if getComment == True:
