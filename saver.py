@@ -58,6 +58,12 @@ class Saver:
 		elif "http://twitcasting.tv/" in userId:
 			userId = userId[22:]
 		url = self.getHlsUrl(userId)
+		if url == False:
+			simpleDialog.errorDialog(_("録画に失敗しました。録画ライブの指定が間違っているか、現在放送中ではありません。"))
+			return
+		globalVars.app.hMainView.statusEdit.Enable()
+		globalVars.app.hMainView.urlEdit.Disable()
+		globalVars.app.hMainView.startButton.Disable()
 		if url == None:
 			waitLiveStart = globalVars.app.config.getboolean("recording", "waitLiveStart", True)
 			if waitLiveStart == True:
@@ -65,9 +71,6 @@ class Saver:
 				self.checkNextLive()
 			else:
 				simpleDialog.errorDialog(_("このユーザは現在配信中ではありません。"))
-			return
-		if url == False:
-			simpleDialog.errorDialog(_("録画に失敗しました。録画ライブの指定が間違っているか、現在放送中ではありません。"))
 			return
 		if "/" in userId:
 			userId = userId[0:userId.find("/")]

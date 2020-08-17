@@ -43,6 +43,7 @@ class MainView(BaseView):
 		self.urlEdit, self.urlStatic = self.creator.inputbox(_("ユーザ名または録画URLを入力"), 500)
 		self.startButton = self.creator.button(_("録画開始"), self.events.start)
 		self.statusEdit, self.statusStatic = self.creator.inputbox(_("状況"), 500, "", wx.TE_READONLY|wx.TE_MULTILINE|wx.TE_DONTWRAP)
+		self.statusEdit.Disable()
 
 class Menu(BaseMenu):
 	def Apply(self,target):
