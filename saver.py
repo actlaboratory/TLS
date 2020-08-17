@@ -11,6 +11,7 @@ import globalVars
 import wx
 import simpleDialog
 import winsound
+import constants
 
 getStatus = 0
 getCurrentLive = 1
@@ -49,7 +50,7 @@ class Saver:
 			try:
 				self.userId = twitcasting.twitcasting.GetUserInfo(userId)["user"]["id"]
 			except:
-				return ret
+				return False
 
 	def start(self, userId):
 		if "https://twitcasting.tv/" in userId:
@@ -60,6 +61,7 @@ class Saver:
 		if url == None:
 			waitLiveStart = globalVars.app.config.getboolean("recording", "waitLiveStart", True)
 			if waitLiveStart == True:
+				self.changeTitle(_("ライブ開始待機中"))
 				self.checkNextLive()
 			else:
 				simpleDialog.errorDialog(_("このユーザは現在配信中ではありません。"))
@@ -111,6 +113,7 @@ class Saver:
 			fileType,
 			target.as_posix()
 		]
+		self.changeTitle(_("録画中:%s") %self.movieInfo["broadcaster"]["screen_id"])
 		self.result = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, encoding="utf-8")
 		globalVars.app.hMainView.urlEdit.Clear()
 		globalVars.app.hMainView.statusEdit.Clear()
@@ -131,6 +134,7 @@ class Saver:
 				timer.Stop()
 				checkNextLive = globalVars.app.config.getboolean("recording", "checkNextLive", True)
 				if self.mode == realtime and checkNextLive == True:
+					self.changeTitle(_("待機中:%s") %self.movieInfo["broadcaster"]["screen_id"])
 					self.checkNextLive()
 					return
 				self.end()
@@ -148,8 +152,16 @@ class Saver:
 		autoClose = globalVars.app.config.getboolean("recording", "autoClose", True)
 		if autoClose == True:
 			globalVars.app.hMainView.events.Exit()
+			return
+		self.changeTitle(_("録画終了"))
 
 	def checkNextLive(self):
 		self.count = 0
 		self.getCurrentLiveTimer = wx.Timer(self.evtHandler, getCurrentLive)
 		self.getCurrentLiveTimer.Start(30000)
+
+	def changeTitle(self, string = ""):
+		if string == "":
+			globalVars.app.hMainView.hFrame.SetTitle(constants.APP_NAME)
+			return
+		globalVars.app.hMainView.hFrame.SetTitle("%s - %s" %(string, constants.APP_NAME))
