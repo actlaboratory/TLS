@@ -67,7 +67,7 @@ class Saver:
 		if url == None:
 			waitLiveStart = globalVars.app.config.getboolean("recording", "waitLiveStart", True)
 			if waitLiveStart == True:
-				self.changeTitle(_("ライブ開始待機中"))
+				self.changeTitle(_("ライブ開始待機中:%s") %userId)
 				self.checkNextLive()
 			else:
 				simpleDialog.errorDialog(_("このユーザは現在配信中ではありません。"))
