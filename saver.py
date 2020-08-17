@@ -17,6 +17,7 @@ getStatus = 0
 getCurrentLive = 1
 archive = 2
 realtime = 3
+comment = 4
 
 class Saver:
 	def __init__(self):
@@ -107,6 +108,14 @@ class Saver:
 			question = simpleDialog.yesNoDialog(_("確認"), _("%sはすでに存在します。上書きしてもよろしいですか？") %target.as_posix())
 			if question == wx.ID_NO:
 				return
+		getComment = globalVars.app.config.getboolean("recording", "getComment", False)
+		if getComment == True:
+			self.commentFile = pathlib.Path("%s/%s.txt" %(outDir, fileName))
+			self.commentFile.touch()
+			self.getCommentTimer = wx.Timer(self.evtHandler, comment)
+			self.getCommentTimer.Start(5000)
+			self.comments = []
+			self.lastCommentId = ""
 		cmd = [
 			"ffmpeg",
 			"-y",
@@ -117,6 +126,7 @@ class Saver:
 			target.as_posix()
 		]
 		self.changeTitle(_("録画中:%s") %self.movieInfo["broadcaster"]["screen_id"])
+		self.isRunning = True
 		self.result = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, encoding="utf-8")
 		globalVars.app.hMainView.urlEdit.Clear()
 		globalVars.app.hMainView.statusEdit.Clear()
@@ -136,6 +146,7 @@ class Saver:
 			if self.result.poll() != None:
 				timer.Stop()
 				checkNextLive = globalVars.app.config.getboolean("recording", "checkNextLive", True)
+				self.isRunning = False
 				if self.mode == realtime and checkNextLive == True:
 					self.changeTitle(_("待機中:%s") %self.movieInfo["broadcaster"]["screen_id"])
 					self.checkNextLive()
@@ -150,6 +161,11 @@ class Saver:
 			elif self.count == 20:
 				timer.Stop()
 				self.end()
+		elif id == comment:
+			if self.isRunning == False:
+				timer.Stop()
+				return
+			self.getComment()
 
 	def end(self):
 		autoClose = globalVars.app.config.getboolean("recording", "autoClose", True)
@@ -168,3 +184,20 @@ class Saver:
 			globalVars.app.hMainView.hFrame.SetTitle(constants.APP_NAME)
 			return
 		globalVars.app.hMainView.hFrame.SetTitle("%s - %s" %(string, constants.APP_NAME))
+
+	def getComment(self):
+		result = twitcasting.twitcasting.GetComments(self.movieInfo["movie"]["id"], 0, 50, self.lastCommentId)
+		if len(result) == 0 or type(result) != []:
+			return
+		result.reverse()
+		self.lastCommentId = result[-1]["id"]
+		for i in result:
+			tmp = [
+				i["from_user"]["name"],
+				i["message"],
+				datetime.datetime.fromtimestamp(i["created"]).strftime("%Y/%m/%d %H:%M:%S"),
+				i["from_user"]["screen_id"]
+			]
+			tmp = "\t".join(tmp)
+			self.comments.append(tmp)
+		self.commentFile.write_text("\n".join(self.comments), encoding="utf-8")

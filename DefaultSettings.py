@@ -31,6 +31,7 @@ class DefaultSettings:
 			"subDirName": "$user_screen_id",
 			"waitLiveStart": True,
 			"checkNextLive": True,
+			"getComment": False,
 			"autoClose": True
 		}
 		return config
