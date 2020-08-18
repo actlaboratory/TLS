@@ -12,6 +12,7 @@ import wx
 import simpleDialog
 import winsound
 import constants
+import views.password
 
 getStatus = 0
 getCurrentLive = 1
@@ -34,10 +35,18 @@ class Saver:
 			except:
 				return False
 			if self.movieInfo["movie"]["is_protected"] == True:
-				password = input("Type password.")
+				dialog = views.password.Dialog()
+				dialog.Initialize()
+				ret = dialog.Show()
+				if ret == wx.ID_CANCEL:
+					return
+				password = dialog.GetData()
 				response = session.post(self.movieInfo["movie"]["link"], data="password=%s" %password, headers={"Content-Type": "application/x-www-form-urlencoded"})
 			response = response.text
-			start = re.search("https:\\\/\\\/dl\d\d\.twitcasting\.tv\\\/tc\.vod\\\/", response).start()
+			try:
+				start = re.search("https:\\\/\\\/dl\d\d\.twitcasting\.tv\\\/tc\.vod\\\/", response).start()
+			except:
+				return False
 			end = response.find("\"", start)
 			url = response[start:end]
 			url = url.replace("\\/", "/")
@@ -66,6 +75,11 @@ class Saver:
 		globalVars.app.hMainView.urlEdit.Disable()
 		globalVars.app.hMainView.startButton.Disable()
 		if url == None:
+			if self.mode == archive:
+				globalVars.app.hMainView.urlEdit.Enable()
+				globalVars.app.hMainView.startButton.Enable()
+				globalVars.app.hMainView.statusEdit.Disable()
+				return
 			waitLiveStart = globalVars.app.config.getboolean("recording", "waitLiveStart", True)
 			if waitLiveStart == True:
 				self.changeTitle(_("ライブ開始待機中:%s") %userId)
