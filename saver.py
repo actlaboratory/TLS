@@ -104,7 +104,6 @@ class Saver:
 		for i, j in nameReplaceList.items():
 			fileName = fileName.replace(i, j)
 		target = pathlib.Path("%s/%s.%s" %(outDir, fileName, fileType))
-		simpleDialog.debugDialog(target.as_posix())
 		if target.exists() == True:
 			question = simpleDialog.yesNoDialog(_("確認"), _("%sはすでに存在します。上書きしてもよろしいですか？") %target.as_posix())
 			if question == wx.ID_NO:
