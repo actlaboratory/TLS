@@ -11,7 +11,7 @@ from logging import getLogger
 
 class ConfigManager(configparser.ConfigParser):
 	def __init__(self):
-		super().__init__()
+		super().__init__(interpolation=None)
 		self.identifier="ConfigManager"
 		self.log=getLogger(self.identifier)
 		self.log.debug("Create config instance")

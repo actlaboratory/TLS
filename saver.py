@@ -80,17 +80,17 @@ class Saver:
 		startTime = datetime.datetime.fromtimestamp(self.movieInfo["movie"]["created"])
 		fileType = globalVars.app.config["recording"]["fileType"]
 		nameReplaceList = {
-			"$user_id": self.movieInfo["broadcaster"]["id"],
-			"$user_screen_id": self.movieInfo["broadcaster"]["screen_id"],
-			"$user_name": self.movieInfo["broadcaster"]["name"],
-			"$year": startTime.strftime("%Y"),
-			"$month": startTime.strftime("%m"),
-			"$day": startTime.strftime("%d"),
-			"$hour": startTime.strftime("%H"),
-			"$minute": startTime.strftime("%M"),
-			"$second": startTime.strftime("%S"),
-			"$movie_title": self.movieInfo["movie"]["title"],
-			"$movie_id": self.movieInfo["movie"]["id"]
+			"%user_id%": self.movieInfo["broadcaster"]["id"],
+			"%user_screen_id%": self.movieInfo["broadcaster"]["screen_id"],
+			"%user_name%": self.movieInfo["broadcaster"]["name"],
+			"%year%": startTime.strftime("%Y"),
+			"%month%": startTime.strftime("%m"),
+			"%day%": startTime.strftime("%d"),
+			"%hour%": startTime.strftime("%H"),
+			"%minute%": startTime.strftime("%M"),
+			"%second%": startTime.strftime("%S"),
+			"%movie_title%": self.movieInfo["movie"]["title"],
+			"%movie_id%": self.movieInfo["movie"]["id"]
 		}
 		outDir = pathlib.Path(globalVars.app.config["recording"]["outDir"])
 		createSubDir = globalVars.app.config.getboolean("recording", "createSubDir", True)
@@ -104,6 +104,7 @@ class Saver:
 		for i, j in nameReplaceList.items():
 			fileName = fileName.replace(i, j)
 		target = pathlib.Path("%s/%s.%s" %(outDir, fileName, fileType))
+		simpleDialog.debugDialog(target.as_posix())
 		if target.exists() == True:
 			question = simpleDialog.yesNoDialog(_("確認"), _("%sはすでに存在します。上書きしてもよろしいですか？") %target.as_posix())
 			if question == wx.ID_NO:

@@ -26,9 +26,9 @@ class DefaultSettings:
 		config["recording"]={
 			"outDir": "output",
 			"fileType": "mp4",
-			"fileName": "$user_screen_id（$year年$month月$day日$hour時$minute分$second秒）",
+			"fileName": "%user_screen_id%（%year%年%month%月%day%日%hour%時%minute%分%second%秒）",
 			"createSubDir": True,
-			"subDirName": "$user_screen_id",
+			"subDirName": "%user_screen_id%",
 			"waitLiveStart": True,
 			"checkNextLive": True,
 			"getComment": False,
