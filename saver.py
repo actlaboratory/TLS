@@ -24,6 +24,7 @@ class Saver:
 	def __init__(self):
 		self.evtHandler = wx.EvtHandler()
 		self.evtHandler.Bind(wx.EVT_TIMER, self.timer)
+		self.changeView(False)
 
 	def getHlsUrl(self, userId):
 		if "/movie/" in userId:
@@ -71,14 +72,10 @@ class Saver:
 		if url == False:
 			simpleDialog.errorDialog(_("録画に失敗しました。録画ライブの指定が間違っているか、現在放送中ではありません。"))
 			return
-		globalVars.app.hMainView.statusEdit.Enable()
-		globalVars.app.hMainView.urlEdit.Disable()
-		globalVars.app.hMainView.startButton.Disable()
+		self.changeView(True)
 		if url == None:
 			if self.mode == archive:
-				globalVars.app.hMainView.urlEdit.Enable()
-				globalVars.app.hMainView.startButton.Enable()
-				globalVars.app.hMainView.statusEdit.Disable()
+				self.changeView(False)
 				return
 			waitLiveStart = globalVars.app.config.getboolean("recording", "waitLiveStart", True)
 			if waitLiveStart == True:
@@ -121,9 +118,7 @@ class Saver:
 		if target.exists() == True:
 			question = simpleDialog.yesNoDialog(_("確認"), _("%sはすでに存在します。上書きしてもよろしいですか？") %target.as_posix())
 			if question == wx.ID_NO:
-				globalVars.app.hMainView.urlEdit.Enable()
-				globalVars.app.hMainView.startButton.Enable()
-				globalVars.app.hMainView.statusEdit.Disable()
+				self.changeView(False)
 				return
 		getComment = globalVars.app.config.getboolean("recording", "getComment", False)
 		if getComment == True:
@@ -235,3 +230,15 @@ class Saver:
 		for i in movies:
 			if i["is_recorded"] == True:
 				self.start(i["link"])
+
+	def changeView(self, mode):
+		if mode == True:
+			globalVars.app.hMainView.urlEdit.Disable()
+			globalVars.app.hMainView.startButton.Disable()
+			globalVars.app.hMainView.downloadArchiveButton.Disable()
+			globalVars.app.hMainView.statusEdit.Enable()
+		elif mode == False:
+			globalVars.app.hMainView.urlEdit.Enable()
+			globalVars.app.hMainView.startButton.Enable()
+			globalVars.app.hMainView.downloadArchiveButton.Enable()
+			globalVars.app.hMainView.statusEdit.Disable()

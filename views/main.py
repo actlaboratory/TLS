@@ -44,7 +44,6 @@ class MainView(BaseView):
 		self.startButton = self.creator.button(_("録画開始"), self.events.start)
 		self.downloadArchiveButton = self.creator.button(_("このユーザの録画ライブを全てダウンロード"), self.events.downloadArchive)
 		self.statusEdit, self.statusStatic = self.creator.inputbox(_("状況"), 500, "", wx.TE_READONLY|wx.TE_MULTILINE|wx.TE_DONTWRAP)
-		self.statusEdit.Disable()
 
 class Menu(BaseMenu):
 	def Apply(self,target):
