@@ -42,6 +42,7 @@ class MainView(BaseView):
 		self.InstallMenuEvent(Menu(self.identifier),self.events.OnMenuSelect)
 		self.urlEdit, self.urlStatic = self.creator.inputbox(_("ユーザ名または録画URLを入力"), 500)
 		self.startButton = self.creator.button(_("録画開始"), self.events.start)
+		self.downloadArchiveButton = self.creator.button(_("このユーザの録画ライブを全てダウンロード"), self.events.downloadArchive)
 		self.statusEdit, self.statusStatic = self.creator.inputbox(_("状況"), 500, "", wx.TE_READONLY|wx.TE_MULTILINE|wx.TE_DONTWRAP)
 		self.statusEdit.Disable()
 
@@ -79,3 +80,6 @@ class Events(BaseEvents):
 
 	def start(self, event):
 		globalVars.app.saver.start(self.parent.urlEdit.GetValue())
+
+	def downloadArchive(self, event):
+		globalVars.app.saver.downloadArchive(self.parent.urlEdit.GetValue())

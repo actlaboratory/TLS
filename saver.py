@@ -218,3 +218,20 @@ class Saver:
 			tmp = "\t".join(tmp)
 			self.comments.append(tmp)
 		self.commentFile.write_text("\n".join(self.comments), encoding="utf-8")
+
+	def downloadArchive(self, user):
+		if "https://twitcasting.tv/" in user:
+			user = user[23:]
+		elif "http://twitcasting.tv/" in user:
+			user = user[22:]
+		if "/" in user:
+			user = user[0:user.find("/")]
+		movies = []
+		result = twitcasting.twitcasting.GetMoviesByUser(user)
+		while len(result) > 0:
+			movies += list(result)
+			result = twitcasting.twitcasting.GetMoviesByUser(user, 0, 20, result[-1]["id"])
+			del result[0]
+		for i in movies:
+			if i["is_recorded"] == True:
+				self.start(i["link"])
