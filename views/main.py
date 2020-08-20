@@ -50,14 +50,14 @@ class Menu(BaseMenu):
 		"""指定されたウィンドウに、メニューを適用する。"""
 
 		#メニューの大項目を作る
-		self.hHelpMenu=wx.Menu()
+		# self.hHelpMenu=wx.Menu()
 
 		#ヘルプメニューの中身
-		self.RegisterMenuCommand(self.hHelpMenu,"EXAMPLE",_("テストダイアログを閲覧"))
+		# self.RegisterMenuCommand(self.hHelpMenu,"EXAMPLE",_("テストダイアログを閲覧"))
 
 		#メニューバーの生成
 		self.hMenuBar=wx.MenuBar()
-		self.hMenuBar.Append(self.hHelpMenu,_("ヘルプ"))
+		# self.hMenuBar.Append(self.hHelpMenu,_("ヘルプ"))
 		target.SetMenuBar(self.hMenuBar)
 
 class Events(BaseEvents):
