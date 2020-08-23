@@ -50,14 +50,14 @@ class Menu(BaseMenu):
 		"""指定されたウィンドウに、メニューを適用する。"""
 
 		#メニューの大項目を作る
-		# self.hHelpMenu=wx.Menu()
+		self.hHelpMenu=wx.Menu()
 
 		#ヘルプメニューの中身
-		# self.RegisterMenuCommand(self.hHelpMenu,"EXAMPLE",_("テストダイアログを閲覧"))
+		self.RegisterMenuCommand(self.hHelpMenu,"versionInfo",_("バージョン情報(&V) ..."))
 
 		#メニューバーの生成
 		self.hMenuBar=wx.MenuBar()
-		# self.hMenuBar.Append(self.hHelpMenu,_("ヘルプ"))
+		self.hMenuBar.Append(self.hHelpMenu,_("ヘルプ"))
 		target.SetMenuBar(self.hMenuBar)
 
 class Events(BaseEvents):
@@ -70,12 +70,9 @@ class Events(BaseEvents):
 
 		selected=event.GetId()#メニュー識別しの数値が出る
 
-		if selected==menuItemsStore.getRef("EXAMPLE"):
-			d = mkDialog.Dialog()
-			d.Initialize(_("テスト"), _("テストダイアログ"), (_("Hello World! を表示"), _("キャンセル")))
-			r = d.Show()
-			if r == 0:
-				print("Hello World!")
+		#バージョン情報
+		if selected==menuItemsStore.getRef("versionInfo"):
+			simpleDialog.dialog(_("バージョン情報"), _("%(appName)s Version %(versionNumber)s.\nCopyright (C) %(year)s %(developerName)s") %{"appName": constants.APP_NAME, "versionNumber": constants.APP_VERSION, "year":constants.APP_COPYRIGHT_YEAR, "developerName": constants.APP_DEVELOPERS})
 
 	def start(self, event):
 		globalVars.app.saver.start(self.parent.urlEdit.GetValue())
