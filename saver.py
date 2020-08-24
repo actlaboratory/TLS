@@ -199,7 +199,7 @@ class Saver:
 
 	def getComment(self):
 		result = twitcasting.twitcasting.GetComments(self.movieInfo["movie"]["id"], 0, 50, self.lastCommentId)
-		if len(result) == 0 or type(result) != []:
+		if len(result) == 0 or type(result) != list:
 			return
 		result.reverse()
 		self.lastCommentId = result[-1]["id"]
