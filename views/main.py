@@ -56,7 +56,6 @@ class Menu(BaseMenu):
 		self.RegisterMenuCommand(self.hHelpMenu,"versionInfo",_("バージョン情報(&V) ..."))
 
 		#メニューバーの生成
-		self.hMenuBar=wx.MenuBar()
 		self.hMenuBar.Append(self.hHelpMenu,_("ヘルプ"))
 		target.SetMenuBar(self.hMenuBar)
 
