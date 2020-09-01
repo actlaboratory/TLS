@@ -16,3 +16,4 @@ dist/
 *.lib
 *.spec
 pl_auto_save
+log.dat

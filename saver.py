@@ -13,6 +13,7 @@ import simpleDialog
 import winsound
 import constants
 import views.password
+import pickle
 
 getStatus = 0
 getCurrentLive = 1
@@ -25,6 +26,15 @@ class Saver:
 		self.evtHandler = wx.EvtHandler()
 		self.evtHandler.Bind(wx.EVT_TIMER, self.timer)
 		self.changeView(False)
+		self.logFile = pathlib.Path("log.dat")
+		if self.logFile.exists() == False:
+			self.logFile.touch()
+		self.log = {}
+		try:
+			with open(self.logFile, "rb") as f:
+				self.log = pickle.load(f)
+		except:
+			pass
 
 	def getHlsUrl(self, userId):
 		if "/movie/" in userId:
@@ -114,6 +124,14 @@ class Saver:
 		fileName = globalVars.app.config["recording"]["fileName"]
 		for i, j in nameReplaceList.items():
 			fileName = fileName.replace(i, j)
+		movieId = self.movieInfo["movie"]["id"]
+		if movieId in self.log.keys():
+			self.log[movieId] += 1
+			fileName = fileName + "_" + str(self.log[movieId])
+		else:
+			self.log[movieId] = 1
+		with open(self.logFile, "wb") as f:
+			pickle.dump(self.log, f)
 		target = pathlib.Path("%s/%s.%s" %(outDir, fileName, fileType))
 		if target.exists() == True:
 			question = simpleDialog.yesNoDialog(_("確認"), _("%sはすでに存在します。上書きしてもよろしいですか？") %target.as_posix())
