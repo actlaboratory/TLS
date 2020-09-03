@@ -125,13 +125,14 @@ class Saver:
 		for i, j in nameReplaceList.items():
 			fileName = fileName.replace(i, j)
 		movieId = self.movieInfo["movie"]["id"]
-		if movieId in self.log.keys():
-			self.log[movieId] += 1
-			fileName = fileName + "_" + str(self.log[movieId])
-		else:
-			self.log[movieId] = 1
-		with open(self.logFile, "wb") as f:
-			pickle.dump(self.log, f)
+		if self.mode == realtime:
+			if movieId in self.log.keys():
+				self.log[movieId] += 1
+				fileName = fileName + "_" + str(self.log[movieId])
+			else:
+				self.log[movieId] = 1
+			with open(self.logFile, "wb") as f:
+				pickle.dump(self.log, f)
 		target = pathlib.Path("%s/%s.%s" %(outDir, fileName, fileType))
 		if target.exists() == True:
 			question = simpleDialog.yesNoDialog(_("確認"), _("%sはすでに存在します。上書きしてもよろしいですか？") %target.as_posix())
