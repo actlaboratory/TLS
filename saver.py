@@ -14,6 +14,7 @@ import winsound
 import constants
 import views.password
 import pickle
+import os
 
 getStatus = 0
 getCurrentLive = 1
@@ -126,7 +127,7 @@ class Saver:
 			fileName = fileName.replace(i, j)
 		movieId = self.movieInfo["movie"]["id"]
 		if self.mode == realtime:
-			if movieId in self.log.keys():
+			if movieId in self.log.keys() and os.path.exists("%s/%s.%s" %(outDir, fileName, fileType)) == True:
 				self.log[movieId] += 1
 				fileName = fileName + "_" + str(self.log[movieId])
 			else:
