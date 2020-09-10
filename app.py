@@ -21,9 +21,10 @@ class Main(AppBase.MaiｎBase):
 		return True
 
 	def OnExit(self):
-		#設定の保存やリソースの開放など、終了前に行いたい処理があれば記述できる
-		#ビューへのアクセスや終了の抑制はできないので注意。
-
+		if self.saver.pipeServer != None:
+			self.saver.pipeServer.exit()
+		if self.saver.pipeClient != None:
+			self.saver.pipeClient.close()
 
 		#戻り値は無視される
 		return 0

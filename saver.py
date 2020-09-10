@@ -37,7 +37,8 @@ class Saver:
 				self.log = pickle.load(f)
 		except:
 			pass
-		self.pipeExists = False
+		self.pipeServer = None
+		self.pipeClient = None
 
 	def getHlsUrl(self, userId):
 		if "/movie/" in userId:
@@ -161,24 +162,21 @@ class Saver:
 		]
 		self.changeTitle(_("録画中:%s") %self.movieInfo["broadcaster"]["screen_id"])
 		self.isRunning = True
-		if self.pipeExists == True:
-			self.pipeServer.reopen()
-		else:
+		if self.pipeServer == None:
 			self.pipeServer = namedPipe.server.Server("ffmpeg_msg")
 			self.pipeServer.setReceiveCallback(self.getStatus)
 			self.pipeServer.start()
-			self.pipeExists = True
-		self.pipeClient = open("\\\\.\\pipe\\ffmpeg_msg", "wb")
+		if self.pipeClient == None:
+			self.pipeClient = open("\\\\.\\pipe\\ffmpeg_msg", "wb")
 		self.result = subprocess.Popen(cmd, stdout = self.pipeClient, stderr = subprocess.STDOUT, encoding="utf-8")
 		globalVars.app.hMainView.urlEdit.Clear()
 		globalVars.app.hMainView.statusEdit.Clear()
 		self.getStatusTimer = wx.Timer(self.evtHandler, getStatus)
 		self.getStatusTimer.Start(1000)
 
-	def getStatus(self, a):
+	def getStatus(self, msg):
 		cursorPoint = globalVars.app.hMainView.statusEdit.GetInsertionPoint()
-		newMessages = self.pipeServer.getNewMessageList()
-		globalVars.app.hMainView.statusEdit.SetValue(globalVars.app.hMainView.statusEdit.GetValue() + "\n".join(newMessages))
+		globalVars.app.hMainView.statusEdit.SetValue(globalVars.app.hMainView.statusEdit.GetValue() + msg)
 		globalVars.app.hMainView.statusEdit.SetInsertionPoint(cursorPoint)
 
 	def timer(self, event):
@@ -186,8 +184,6 @@ class Saver:
 		id = timer.GetId()
 		if id == getStatus:
 			if self.result.poll() != None:
-				self.pipeClient.close()
-				self.pipeServer.close()
 				timer.Stop()
 				checkNextLive = globalVars.app.config.getboolean("recording", "checkNextLive", True)
 				self.isRunning = False
