@@ -15,6 +15,7 @@ import constants
 import views.password
 import pickle
 import os
+import namedPipe.server
 
 getStatus = 0
 getCurrentLive = 1
@@ -36,6 +37,7 @@ class Saver:
 				self.log = pickle.load(f)
 		except:
 			pass
+		self.pipeExists = False
 
 	def getHlsUrl(self, userId):
 		if "/movie/" in userId:
@@ -159,23 +161,33 @@ class Saver:
 		]
 		self.changeTitle(_("録画中:%s") %self.movieInfo["broadcaster"]["screen_id"])
 		self.isRunning = True
-		self.result = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, encoding="utf-8")
+		if self.pipeExists == True:
+			self.pipeServer.reopen()
+		else:
+			self.pipeServer = namedPipe.server.Server("ffmpeg_msg")
+			self.pipeServer.setReceiveCallback(self.getStatus)
+			self.pipeServer.start()
+			self.pipeExists = True
+		self.pipeClient = open("\\\\.\\pipe\\ffmpeg_msg", "wb")
+		self.result = subprocess.Popen(cmd, stdout = self.pipeClient, stderr = subprocess.STDOUT, encoding="utf-8")
 		globalVars.app.hMainView.urlEdit.Clear()
 		globalVars.app.hMainView.statusEdit.Clear()
 		self.getStatusTimer = wx.Timer(self.evtHandler, getStatus)
 		self.getStatusTimer.Start(1000)
 
-	def getStatus(self):
+	def getStatus(self, a):
 		cursorPoint = globalVars.app.hMainView.statusEdit.GetInsertionPoint()
-		globalVars.app.hMainView.statusEdit.SetValue(globalVars.app.hMainView.statusEdit.GetValue() + self.result.stdout.readline())
+		newMessages = self.pipeServer.getNewMessageList()
+		globalVars.app.hMainView.statusEdit.SetValue(globalVars.app.hMainView.statusEdit.GetValue() + "\n".join(newMessages))
 		globalVars.app.hMainView.statusEdit.SetInsertionPoint(cursorPoint)
 
 	def timer(self, event):
 		timer = event.GetTimer()
 		id = timer.GetId()
 		if id == getStatus:
-			self.getStatus()
 			if self.result.poll() != None:
+				self.pipeClient.close()
+				self.pipeServer.close()
 				timer.Stop()
 				checkNextLive = globalVars.app.config.getboolean("recording", "checkNextLive", True)
 				self.isRunning = False
@@ -257,8 +269,12 @@ class Saver:
 			globalVars.app.hMainView.startButton.Disable()
 			globalVars.app.hMainView.downloadArchiveButton.Disable()
 			globalVars.app.hMainView.statusEdit.Enable()
+			globalVars.app.hMainView.statusEdit.SetFocus()
 		elif mode == False:
 			globalVars.app.hMainView.urlEdit.Enable()
 			globalVars.app.hMainView.startButton.Enable()
 			globalVars.app.hMainView.downloadArchiveButton.Enable()
 			globalVars.app.hMainView.statusEdit.Disable()
+			globalVars.app.hMainView.urlEdit.SetFocus()
+
+	
