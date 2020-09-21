@@ -40,10 +40,10 @@ class MainView(BaseView):
 			self.app.config.getint(self.identifier,"positionY",50,0)
 		)
 		self.InstallMenuEvent(Menu(self.identifier),self.events.OnMenuSelect)
-		self.urlEdit, self.urlStatic = self.creator.inputbox(_("ユーザ名または録画URLを入力"), 500)
+		self.urlEdit, self.urlStatic = self.creator.inputbox(_("ユーザ名または録画URLを入力"), None, "", 0, 500)
 		self.startButton = self.creator.button(_("録画開始"), self.events.start)
 		self.downloadArchiveButton = self.creator.button(_("このユーザの録画ライブを全てダウンロード"), self.events.downloadArchive)
-		self.statusEdit, self.statusStatic = self.creator.inputbox(_("状況"), 500, "", wx.TE_READONLY|wx.TE_MULTILINE|wx.TE_DONTWRAP)
+		self.statusEdit, self.statusStatic = self.creator.inputbox(_("状況"), None, "", wx.TE_READONLY|wx.TE_MULTILINE|wx.TE_DONTWRAP, 500)
 
 class Menu(BaseMenu):
 	def Apply(self,target):
