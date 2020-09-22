@@ -8,9 +8,10 @@ from logging import getLogger
 from views.baseDialog import *
 
 class Dialog(BaseDialog):
+	def __init__(self):
+		super().__init__("passwordDialog")
+
 	def Initialize(self):
-		self.identifier="passwordDialog"#このビューを表す文字列
-		self.log=getLogger(self.identifier)
 		self.log.debug("created")
 		super().Initialize(self.app.hMainView.hFrame,_("合い言葉の入力"))
 		self.InstallControls()

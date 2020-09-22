@@ -25,9 +25,7 @@ from views import mkDialog
 
 class MainView(BaseView):
 	def __init__(self):
-		super().__init__()
-		self.identifier="mainView"#このビューを表す文字列
-		self.log=getLogger(self.identifier)
+		super().__init__("mainView")
 		self.log.debug("created")
 		self.app=globalVars.app
 		self.events=Events(self,self.identifier)
