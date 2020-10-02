@@ -69,10 +69,10 @@ class Saver:
 				return False
 
 	def start(self, userId, noexit=False):
-		if "https://twitcasting.tv/" in userId:
-			userId = userId[23:]
-		elif "http://twitcasting.tv/" in userId:
-			userId = userId[22:]
+		userId = userId.replace("http://twitcasting.tv/", "")
+		userId = userId.replace("https://twitcasting.tv/", "")
+		if "/" in userId:
+			userId = userId[0:userId.find("/")]
 		url = self.getHlsUrl(userId)
 		if url == False:
 			simpleDialog.errorDialog(_("録画に失敗しました。録画ライブの指定が間違っているか、現在放送中ではありません。"))
@@ -228,10 +228,8 @@ class Saver:
 		self.commentFile.write_text("\n".join(self.comments), encoding="utf-8")
 
 	def downloadArchive(self, user):
-		if "https://twitcasting.tv/" in user:
-			user = user[23:]
-		elif "http://twitcasting.tv/" in user:
-			user = user[22:]
+		user = user.replace("http://twitcasting.tv/", "")
+		user = user.replace("https://twitcasting.tv/", "")
 		if "/" in user:
 			user = user[0:user.find("/")]
 		movies = []
