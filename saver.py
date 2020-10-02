@@ -68,7 +68,7 @@ class Saver:
 			except:
 				return False
 
-	def start(self, userId):
+	def start(self, userId, noexit=False):
 		if "https://twitcasting.tv/" in userId:
 			userId = userId[23:]
 		elif "http://twitcasting.tv/" in userId:
@@ -155,8 +155,19 @@ class Saver:
 		self.result = subprocess.Popen(cmd, stdout = self.pipeClient, stderr = subprocess.STDOUT, encoding="utf-8")
 		globalVars.app.hMainView.urlEdit.Clear()
 		globalVars.app.hMainView.statusEdit.Clear()
-		self.getStatusTimer = wx.Timer(self.evtHandler, getStatus)
-		self.getStatusTimer.Start(1000)
+		while True:
+			wx.YieldIfNeeded()
+			if self.result.poll() != None:
+				break
+		checkNextLive = globalVars.app.config.getboolean("recording", "checkNextLive", True)
+		self.isRunning = False
+		if self.mode == realtime and checkNextLive == True:
+			self.changeTitle(_("待機中:%s") %self.movieInfo["broadcaster"]["screen_id"])
+			self.checkNextLive()
+			return
+		if noexit == False:
+			self.end()
+		return True
 
 	def getStatus(self, msg):
 		cursorPoint = globalVars.app.hMainView.statusEdit.GetInsertionPoint()
@@ -166,17 +177,7 @@ class Saver:
 	def timer(self, event):
 		timer = event.GetTimer()
 		id = timer.GetId()
-		if id == getStatus:
-			if self.result.poll() != None:
-				timer.Stop()
-				checkNextLive = globalVars.app.config.getboolean("recording", "checkNextLive", True)
-				self.isRunning = False
-				if self.mode == realtime and checkNextLive == True:
-					self.changeTitle(_("待機中:%s") %self.movieInfo["broadcaster"]["screen_id"])
-					self.checkNextLive()
-					return
-				self.end()
-		elif id == getCurrentLive:
+		if id == getCurrentLive:
 			self.count += 1
 			currentLive = self.getHlsUrl(self.userId)
 			if currentLive != False and currentLive != None:
@@ -239,9 +240,14 @@ class Saver:
 			movies += list(result)
 			result = twitcasting.twitcasting.GetMoviesByUser(user, 0, 20, result[-1]["id"])
 			del result[0]
+		done = 0
 		for i in movies:
 			if i["is_recorded"] == True:
-				self.start(i["link"])
+				result = self.start(i["link"], True)
+				if result == True:
+					done += 1
+		simpleDialog.dialog(_("完了"), _("%i個のライブをダウンロードしました。") %done)
+		self.end()
 
 	def changeView(self, mode):
 		if mode == True:
