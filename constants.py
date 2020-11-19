@@ -6,6 +6,7 @@ import wx
 
 #アプリケーション基本情報
 APP_NAME="TLS"
+APP_FULL_NAME = "Twitcasting Live Saver"
 APP_VERSION="0.01"
 APP_COPYRIGHT_YEAR="2020"
 APP_DEVELOPERS="Kazto Kitabatake"
