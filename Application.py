@@ -18,6 +18,10 @@ import app as application
 import constants
 import globalVars
 
+#カレントディレクトリを設定
+if hasattr(sys,"frozen"): os.chdir(os.path.dirname(sys.executable))
+else: os.chdir(os.path.abspath(os.path.dirname(__file__)))
+
 def main():
 	app=application.Main()
 	globalVars.app=app
